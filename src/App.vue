@@ -2,7 +2,7 @@
   <Navbar @backgroundChanged="backgroundChanged"/>
   <main class="w-full">
     <section class="section">
-      <Headline :day="day"/>
+      <Headline :bgType="bgType"/>
     </section>
   </main>
 </template>
@@ -18,12 +18,12 @@ export default {
   },
   data() {
     return {
-      day: true
+      bgType: 'night'
     }
   },
   methods: {
-    backgroundChanged (day) {
-      this.day = day
+    backgroundChanged (bgType) {
+      this.bgType = bgType
     }
   }
 }
@@ -32,7 +32,7 @@ export default {
 
 <style scoped>
 .section {
-  @apply w-full;
+  @apply w-screen;
   /* py-24 px-6 py-12 md:px-16 xl:px-28;*/
 }
 </style>

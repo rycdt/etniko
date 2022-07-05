@@ -1,86 +1,131 @@
 <template>
   <section>
-    <div v-if="day" class="main-bg absolute z-0" v-bind:style="{ 'background-image': 'url(' + backgroundDay + ')' }"></div>
-    <div v-else class="main-bg absolute z-0" v-bind:style="{ 'background-image': 'url(' + backgroundNight + ')' }"></div>
+    <div class="invisible sm:invisible md:visible lg:visible wh-full">
+      <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + background[bgType] + ')' }"></div>
+      <div class="main-bg" v-bind:style="effect"/>
+      <div class="main-bg" v-bind:style="fire"/>
+      <div class="grid grid-cols-12 grid-rows-5 grid-flow-col wh-full z-10">
+        <div v-for="bg in slicedBackgroundsLink" :class="bg.class" :key="bg.index" @mouseover="mouseOver(bg)" @mouseleave="mouseLeave(bg)" >{{ bg.index }}</div>
+      </div>
+<!--      <div class='grid wh-full place-content-center z-20'>-->
+<!--        <div class='text-center'>-->
+<!--          <div>-->
+<!--            <button :onclick="handleDecrement">-</button>-->
+<!--            <input type='number' v-model="mintAmount"/>-->
+<!--            <button :onclick="handleIncrement">+</button>-->
+<!--          </div>-->
+<!--          <button :onclick="handleMint">Mint</button>-->
+<!--        </div>-->
+<!--      </div>-->
+    </div>
 
-    <div v-for="hover in hovers" v-bind:key="hover">
-      <div class="main-bg absolute z-0" v-if="hover.visible"
-           v-bind:style="{ 'background-image': 'url(' + hover.effect + ')' }"
-           v-bind:key="hover" />
-    </div>
-    <div class="grid grid-cols-12 grid-rows-5 grid-flow-col lg:min-h-screen md:relative z-10 flex">
-      <div v-for="bg in slicedBackgroundsLink" :class="bg.class" :key="bg.index" @mouseover="mouseOver(bg)" @mouseleave="mouseLeave(bg)" @click="clickCard">{{ bg.index }}</div>
-    </div>
-
-    <div class="grid grid-rows-3 grid-flow-col w-full lg:hidden">
-      hahaha
-    </div>
+    <mobile-vue :bgType="bgType"/>
   </section>
 </template>
 
 <script>
+import Etniko from '../artifacts/contracts/Etniko.sol/Etniko.json';
+import {ethers, BigNumber} from 'ethers';
+const etnikoAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+import MobileVue from '@/components/Mobile';
+
 export default {
   name:'headline-vue',
-  props: ['day'],
+  props: {
+    bgType: {
+      default: 'night',
+      type: String
+    }
+  },
+  components: {
+    MobileVue
+  },
   data() {
     return {
-      backgroundDay: require('@/assets/bg_day.jpg'),
-      backgroundNight: require('@/assets/bg_night.jpg'),
+      background: {
+        night: require('@/assets/bonfire_night.png')
+      },
+      backgroundPortrait: {
+        day: require('@/assets/bg_day_portrait.jpg'),
+        night: require('@/assets/bg_night_portrait.jpg')
+      },
       sliceCount: 60,
       slicedBackgroundsLink: [],
       hoverEffectsLink: [],
       hovers: {
-        12: {
-          effect: require('@/assets/hover_effects/hover_red_flag.png'),
-          visible: false
-        },
-        13: {
-          effect: require('@/assets/hover_effects/hover_red_flag.png'),
-          visible: false
-        },
-        32: {
-          effect: require('@/assets/hover_effects/hover_blue_flag.png'),
-          visible: false
-        },
-        33: {
-          effect: require('@/assets/hover_effects/hover_blue_flag.png'),
-          visible: false
-        },
-        42: {
-          effect: require('@/assets/hover_effects/hover_yellow_flag.png'),
-          visible: false
-        },
-        43: {
-          effect: require('@/assets/hover_effects/hover_yellow_flag.png'),
-          visible: false
+        41: {
+          effect: require('@/assets/hover_effects/hut1.png')
         }
-      }
+      },
+      mintAmount: 1,
+      fire: { 'background-image': 'url(' + require('@/assets/fire.gif') + ')' },
+      effect: {}
     }
   },
   mounted () {
     this.setSlicedBackgrounds()
+    console.log(this.bgType)
   },
   methods: {
+    async handleMint() {
+      if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(
+            etnikoAddress,
+            Etniko.abi,
+            signer
+        );
+
+        try {
+          const response = await contract.mint(BigNumber.from(this.mintAmount), {
+            value: ethers.utils.parseEther((0.01 * this.mintAmount).toString())
+          });
+
+          await provider.waitForTransaction(response.hash);
+          const receipt = await provider.getTransactionReceipt(response.hash);
+
+          receipt.logs.forEach(log => {
+            console.log(parseInt(log.topics[3], 16))
+            this.getURI(contract, log.topics[3])
+          })
+          console.log(receipt)
+          console.log('response: ', response)
+        } catch (err) {
+          console.log(err)
+        }
+      }
+    },
+    handleDecrement() {
+      if (this.mintAmount <= 1) return;
+      this.mintAmount -= 1
+    },
+    handleIncrement(){
+      if (this.mintAmount >= 3) return;
+      this.mintAmount += 1
+    },
+    async getURI(contract, tokenId) {
+      const uri = await contract.tokenURI(tokenId);
+      console.log(uri);
+    },
     setSlicedBackgrounds () {
       [ ...Array(this.sliceCount) ].forEach((index, value) => {
         this.slicedBackgroundsLink.push({
           index: value,
-          class: value % 2 === 1 ? 'bg-gray' : 'bg-white',
+          class: value % 2 === 1 ? 'grid-gray' : 'grid-white',
           // eslint-disable-next-line no-prototype-builtins
           hasHoverEffect: this.hovers.hasOwnProperty(value)
-          // link: `@/assets/bg_night_sliced/bg_night_${(value + 1).toString()}.jpg`,
-          // link: require(`@/assets/bg_night_sliced/bg_night_${(value + 1)}.jpg`)
         })
       })
     },
     mouseOver (bg) {
       if (bg.hasHoverEffect) {
-        this.hovers[bg.index].visible = true
+        this.effect = { 'background-image': 'url(' + this.hovers[bg.index].effect + ')' }
       }
     },
     mouseLeave (bg) {
       if (bg.hasHoverEffect) {
-        this.hovers[bg.index].visible = false
+        this.effect = {}
       }
     }
   }
@@ -88,7 +133,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 
-.bg-gray {
+.grid-gray {
   /* The image used */
   /* Full height */
   //height: 100vh;
@@ -99,7 +144,7 @@ export default {
   opacity: 0%;
 }
 
-.bg-white {
+.grid-white {
   /* The image used */
   /* Full height */
   //height: 100vh;
@@ -118,20 +163,10 @@ export default {
   /* Center and scale the image nicely */
   background: no-repeat center;
   background-size: cover;
-  width: 100vw;
-  height: 100vh;
+  @apply absolute h-screen w-screen z-0
 }
 
-.bg-test {
-  /* The image used */
-  /* Full height */
-  height: 50px;
-  width: 50px;
-
-  /* Center and scale the image nicely */
-  background: url('../assets/icons/twitter.png') no-repeat center;
-  background-size: cover;
+.wh-full {
+  @apply h-screen w-screen absolute
 }
-
-
 </style>

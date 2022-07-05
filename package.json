@@ -24,7 +24,17 @@
     "sass": "^1.51.0",
     "sass-loader": "^12.6.0",
     "tailwindcss": "^3.0.23",
-    "webpack": "^5.72.0"
+    "webpack": "^5.72.0",
+    "solidity-coverage": "^0.7.21",
+    "@nomiclabs/hardhat-etherscan": "^3.1.0",
+    "hardhat-gas-reporter": "^1.0.8",
+    "@nomiclabs/hardhat-ethers": "^2.0.6",
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "@openzeppelin/contracts": "^4.7.0",
+    "autoprefixer": "^10.4.7",
+    "chai": "^4.3.6",
+    "ethereum-waffle": "^3.4.4",
+    "ethers": "^5.6.9"
   },
   "eslintConfig": {
     "root": true,
