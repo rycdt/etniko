@@ -42,8 +42,8 @@ export default {
   data() {
     return {
       backgroundPortrait: {
-        day: require('@/assets/bg_day_portrait.jpg'),
-        night: require('@/assets/bg_night_portrait.jpg')
+        day: require('@/assets/bonfire_night.png'),
+        night: require('@/assets/bonfire_night.png')
       }
     }
   },

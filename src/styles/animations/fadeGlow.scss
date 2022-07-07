@@ -1,0 +1,16 @@
+.fadeGlow {
+  animation: fadeAnimation ease-in-out .65s infinite alternate;
+  -webkit-animation: fadeAnimation ease-in-out .65s infinite alternate;
+  -moz-animation: fadeAnimation ease-in-out .65s infinite alternate;
+  -o-animation: fadeAnimation ease-in-out .65s ;
+}
+
+@-webkit-keyframes fadeAnimation {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeAnimation {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
