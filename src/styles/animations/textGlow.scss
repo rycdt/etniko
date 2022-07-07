@@ -1,0 +1,19 @@
+.textGlow {
+  color: #ffae34;
+  font-family: 'Passero One', cursive;
+  font-weight: bold;
+  font-size: 2.5em;
+  letter-spacing: .2em;
+  animation: glow 0.65s ease-in-out infinite alternate;
+  text-align: center;
+}
+
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 20px #fbb757;
+  }
+  to {
+    text-shadow: 0 0 30px #fbb757, 0 0 10px #fbb757;
+  }
+}

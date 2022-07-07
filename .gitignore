@@ -2,8 +2,16 @@
 node_modules
 /dist
 
+# nft files
+layers
+nfts
+
+# hardhat files
+cache
+artifacts
 
 # local env files
+.env
 .env.local
 .env.*.local
 

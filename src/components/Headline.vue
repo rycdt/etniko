@@ -1,60 +1,70 @@
 <template>
   <section>
-    <div v-if="day" class="main-bg absolute z-0" v-bind:style="{ 'background-image': 'url(' + backgroundDay + ')' }"></div>
-    <div v-else class="main-bg absolute z-0" v-bind:style="{ 'background-image': 'url(' + backgroundNight + ')' }"></div>
+    <div class="invisible sm:invisible md:visible lg:visible wh-full">
+<!--      <div class="cursor-pointer flex items-center absolute z-30 mt-4 ml-7">-->
+<!--        <span class="text-3xl text-indigo-600 mr-1">-->
+<!--         <img src="@/assets/logo_landscape_reverse.png" class="h-12"/>-->
+<!--        </span>-->
+<!--      </div>-->
+      <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + background[bgType] + ')' }"></div>
+      <div class="main-bg fadeGlow" v-bind:style="{ 'background-image': 'url(' + effect + ')' }"/>
+<!--      <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + fire + ')' }"/>-->
+      <div class="grid grid-cols-12 grid-rows-5 grid-flow-col wh-full z-20">
+        <div v-for="bg in slicedBackgroundsLink"
+             :class="`${bg.class} ${bg.gridClass}`"
+             :key="bg.index"
+             @mouseover="mouseOver(bg)"
+             @mouseleave="mouseLeave(bg)"
+             @click="mouseClick(bg)">
+<!--          <span v-if="bg.gridTextVisible" class="textGlow text-sm">{{ bg.index === bg.gridId ? bg.text : '' }}</span>-->
+        </div>
+      </div>
+      <div class='grid wh-full place-content-center z-10'>
+        <div :class="`${textAnim}`">
+          <span class="textGlow">{{ fireText }}</span>
+        </div>
+      </div>
+    </div>
 
-    <div v-for="hover in hovers" v-bind:key="hover">
-      <div class="main-bg absolute z-0" v-if="hover.visible"
-           v-bind:style="{ 'background-image': 'url(' + hover.effect + ')' }"
-           v-bind:key="hover" />
-    </div>
-    <div class="grid grid-cols-12 grid-rows-5 grid-flow-col lg:min-h-screen md:relative z-10 flex">
-      <div v-for="bg in slicedBackgroundsLink" :class="bg.class" :key="bg.index" @mouseover="mouseOver(bg)" @mouseleave="mouseLeave(bg)" @click="clickCard">{{ bg.index }}</div>
-    </div>
-
-    <div class="grid grid-rows-3 grid-flow-col w-full lg:hidden">
-      hahaha
-    </div>
+    <mobile-vue :bgType="bgType"/>
   </section>
 </template>
 
 <script>
+
+import MobileVue from '@/components/Mobile';
+import hovers from './data/hovers'
+
 export default {
   name:'headline-vue',
-  props: ['day'],
+  props: {
+    bgType: {
+      default: 'night',
+      type: String
+    }
+  },
+  components: {
+    MobileVue
+  },
   data() {
     return {
-      backgroundDay: require('@/assets/bg_day.jpg'),
-      backgroundNight: require('@/assets/bg_night.jpg'),
+      background: {
+        day: require('@/assets/bonfire_day.png'),
+        night: require('@/assets/bonfire_night.png')
+      },
+      backgroundPortrait: {
+        day: require('@/assets/bg_day_portrait.jpg'),
+        night: require('@/assets/bg_night_portrait.jpg')
+      },
+      fire: require('@/assets/fire.gif'),
       sliceCount: 60,
       slicedBackgroundsLink: [],
       hoverEffectsLink: [],
-      hovers: {
-        12: {
-          effect: require('@/assets/hover_effects/hover_red_flag.png'),
-          visible: false
-        },
-        13: {
-          effect: require('@/assets/hover_effects/hover_red_flag.png'),
-          visible: false
-        },
-        32: {
-          effect: require('@/assets/hover_effects/hover_blue_flag.png'),
-          visible: false
-        },
-        33: {
-          effect: require('@/assets/hover_effects/hover_blue_flag.png'),
-          visible: false
-        },
-        42: {
-          effect: require('@/assets/hover_effects/hover_yellow_flag.png'),
-          visible: false
-        },
-        43: {
-          effect: require('@/assets/hover_effects/hover_yellow_flag.png'),
-          visible: false
-        }
-      }
+      hovers: hovers,
+      effect: {},
+      mintAmount: 1,
+      fireText: '',
+      textAnim: ''
     }
   },
   mounted () {
@@ -63,54 +73,62 @@ export default {
   methods: {
     setSlicedBackgrounds () {
       [ ...Array(this.sliceCount) ].forEach((index, value) => {
+        let hover = this.hovers.find(data => data.tiles.includes(value))
         this.slicedBackgroundsLink.push({
           index: value,
-          class: value % 2 === 1 ? 'bg-gray' : 'bg-white',
+          class: value % 2 === 1 ? '' : '',
           // eslint-disable-next-line no-prototype-builtins
-          hasHoverEffect: this.hovers.hasOwnProperty(value)
-          // link: `@/assets/bg_night_sliced/bg_night_${(value + 1).toString()}.jpg`,
-          // link: require(`@/assets/bg_night_sliced/bg_night_${(value + 1)}.jpg`)
+          hasHoverEffect: !!hover,
+          effect: hover ? hover.effect : '',
+          text: hover ? hover.text : '',
+          link: hover ? hover.link : '',
+          textAnim: hover ? hover.textAnim: '',
+          gridId: hover ? hover.id : null,
+          gridTextVisible: !!hover,
+          gridClass: hover? hover.gridClass : ''
         })
       })
     },
+    mouseClick (bg) {
+      if (bg.link) {
+        window.open(bg.link);
+        return true;
+      }
+    },
     mouseOver (bg) {
+      let hover = this.hovers.find(data => data.tiles.includes(bg.index))
+      let slicedBg = null
+      if (hover) {
+        slicedBg = this.slicedBackgroundsLink.find(data => data.index === hover.id)
+      }
       if (bg.hasHoverEffect) {
-        this.hovers[bg.index].visible = true
+        this.effect = bg.effect
+        this.fireText = bg.text
+        this.textAnim = bg.textAnim
+        if (slicedBg) {
+          slicedBg.gridTextVisible = false
+        }
       }
     },
     mouseLeave (bg) {
+      let hover = this.hovers.find(data => data.tiles.includes(bg.index))
+      let slicedBg = null
+      if (hover) {
+        slicedBg = this.slicedBackgroundsLink.find(data => data.index === hover.id)
+      }
       if (bg.hasHoverEffect) {
-        this.hovers[bg.index].visible = false
+        this.effect = ''
+        this.fireText = ''
+        this.textAnim = ''
+        if (slicedBg) {
+          slicedBg.gridTextVisible = true
+        }
       }
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-
-.bg-gray {
-  /* The image used */
-  /* Full height */
-  //height: 100vh;
-
-  /* Center and scale the image nicely */
-  background-size: cover;
-  background: gray no-repeat center;
-  opacity: 0%;
-}
-
-.bg-white {
-  /* The image used */
-  /* Full height */
-  //height: 100vh;
-
-  /* Center and scale the image nicely */
-  background-size: cover;
-  background: white no-repeat center;
-  opacity: 0%;
-}
-
-
 .main-bg {
   /* The image used */
   /* Full height */
@@ -118,20 +136,10 @@ export default {
   /* Center and scale the image nicely */
   background: no-repeat center;
   background-size: cover;
-  width: 100vw;
-  height: 100vh;
+  @apply absolute h-screen w-screen z-0
 }
 
-.bg-test {
-  /* The image used */
-  /* Full height */
-  height: 50px;
-  width: 50px;
-
-  /* Center and scale the image nicely */
-  background: url('../assets/icons/twitter.png') no-repeat center;
-  background-size: cover;
+.wh-full {
+  @apply h-screen w-screen absolute
 }
-
-
 </style>

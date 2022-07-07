@@ -1,78 +1,122 @@
 <template>
-  <div class="bg-indigo-600">
-    <nav class="navbar">
-      <div class="flex items-center justify-between">
-        <img src="@/assets/logo_landscape_reverse.png" class="h-12"/>
-
-        <!-- Mobile menu button -->
-        <div @click="toggleNav" class="flex md:hidden">
-          <button
-              type="button"
-              class="navbar-menu-button">
-            <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current">
-              <path fill-rule="evenodd"
-                  d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z" />
-            </svg>
-          </button>
-        </div>
+<!--  sm:visible md:hidden lg:hidden-->
+  <div class="w-full fixed top-0 left-0 z-30">
+    <div class="md:flex items-center justify-between py-4 md:px-10 px-7">
+      <div class="cursor-pointer flex items-center">
+        <span class="text-3xl text-indigo-600 mr-1">
+         <img src="@/assets/logo_landscape_reverse.png" class="h-12"/>
+        </span>
+      </div>
+      <div class="text-3xl absolute right-8 top-6 cursor-pointer md:hidden">
+        <button class="text-white w-10 h-10 relative focus:outline-none" :onclick="setOpen">
+          <span class="sr-only">Open main menu</span>
+          <div class="block w-5 absolute left-1/2 top-1/2   transform  -translate-x-1/2 -translate-y-1/2">
+            <span aria-hidden="true" class="block absolute h-0.5 w-5 bg-current transform transition duration-500 ease-in-out" :class="{'rotate-45': open,' -translate-y-1.5': !open }"></span>
+            <span aria-hidden="true" class="block absolute  h-0.5 w-5 bg-current   transform transition duration-500 ease-in-out" :class="{'opacity-0': open } "></span>
+            <span aria-hidden="true" class="block absolute  h-0.5 w-5 bg-current transform  transition duration-500 ease-in-out" :class="{'-rotate-45': open, ' translate-y-1.5': !open}"></span>
+          </div>
+        </button>
       </div>
 
-      <!-- Mobile Menu open: "block", Menu closed: "hidden" -->
-      <ul v-if="showMenu" :class="showMenu ? 'flex' : 'hidden'"
-          class="navbar-menu">
-        <li class="text-gray-100 hover:text-indigo-400">Discord</li>
-        <li class="text-gray-100 hover:text-indigo-400">Twitter</li>
+      <ul :class="`navbar-menu-mobile ${open ? 'top-20 ' : 'top-[-490px]'}`">
+        <div class="sm:visible md:hidden lg:hidden">
+          <div class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
+            <a class="text-white hover:text-gray-400 duration-500">Twitter</a>
+          </div>
+          <div class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
+            <a class="text-white hover:text-gray-400 duration-500">Discord</a>
+          </div>
+          <div class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
+            <a class="text-white hover:text-gray-400 duration-500">OpenSea</a>
+          </div>
+          <div class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
+            <a class="text-white hover:text-gray-400 duration-500">Gallery</a>
+          </div>
+        </div>
+        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
+          <a class="text-white hover:text-gray-400 duration-500">Mint</a>
+        </li>
+        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
+          <a class="text-white hover:text-gray-400 duration-500"
+             :onclick="connectAccount">{{ isConnected ? 'Connected' : 'Connect' }}</a>
+        </li>
+<!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
+<!--          <a class="text-white hover:text-gray-400 duration-500">{{ currentAccount }}</a>-->
+<!--        </li>-->
+<!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
+<!--          <a class="text-white hover:text-gray-400 duration-500">{{ chainId }}</a>-->
+<!--        </li>-->
+<!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
+<!--          <img @click="switchBackground" :src="icon[bgType]" class="h-10"/>-->
+<!--        </li>-->
       </ul>
-      <ul v-else :class="showMenu ? 'flex' : 'hidden'"
-          class="navbar-menu">
-        <img @click="switchBackground" :src="dayIcon" class="h-10"/>
-        <img src="@/assets/icons/twitter.png" class="h-12" @click="twitter"/>
-        <img src="@/assets/icons/discord.png" class="h-12"/>
-      </ul>
-    </nav>
+    </div>
   </div>
 </template>
 <script>
-import { ref } from 'vue';
 
 export default {
-  name:'navbar-vue',
-  data () {
-    return {
-      day: true,
-      dayIcon: require('@/assets/icons/day.png')
+  name: 'navbar-vue',
+  props: {
+    isConnected: {
+      default: false,
+      type: Boolean
+    },
+    currentAccount: {
+      default: '',
+      type: String
+    },
+    provider: {
+      default: null,
+      type: Object
+    },
+    chainId: {
+      default: 0,
+      type: Number
+    },
+    networks: {
+      default: () => {
+        return {}
+      },
+      type: Object
+    },
+    metamaskInstalled: {
+      type: Function
+    },
+    connectAccount: {
+      type: Function
     }
+  },
+  data() {
+    return {
+      bgType: 'night',
+      icon: {
+        day: require('@/assets/icons/day.png'),
+        night: require('@/assets/icons/night.png')
+      },
+      open: true
+    }
+  },
+  mounted() {
   },
   methods: {
-    twitter () {
-      window.open('https://twitter.com/etniko_io');
+    switchBackground() {
+      this.bgType = (this.bgType === 'night' ? 'day' : 'night')
+      this.$emit('backgroundChanged', this.bgType)
     },
-    switchBackground () {
-      this.day = !this.day
-      this.dayIcon = this.day ? require('@/assets/icons/day.png') : require('@/assets/icons/night.png')
-      this.$emit('backgroundChanged', this.day)
-    }
-  },
-  setup () {
-    let showMenu = ref(false)
-    const toggleNav = () => (showMenu.value = !showMenu.value)
-    return { showMenu, toggleNav }
+    setOpen() {
+      this.open = !this.open
+    },
   }
 }
 </script>
 
 <style scoped>
-.navbar {
-  @apply z-20 md:flex md:items-center md:justify-between md:px-6 md:py-8 lg:px-10 w-full fixed top-0 left-0 right-0 px-5 lg:py-4 py-3;
-  /*background-color: #1F212C;*/
-  opacity: 100%;
-}
-
-.navbar-menu-button {
-  @apply text-gray-100 hover:text-gray-400 focus:outline-none focus:text-gray-400;
-}
-
-.navbar-menu {
-  @apply flex-col mt-8 space-y-4 md:flex md:space-y-0 md:flex-row md:items-center md:space-x-10 md:mt-0
+/*.navbar-menu {*/
+/*    @apply sm:invisible md:visible lg:visible md:flex md:items-center md:pb-0 pb-12 absolute md:static md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in*/
+/*}*/
+/*sm:visible md:hidden lg:hidden*/
+.navbar-menu-mobile {
+  @apply md:flex md:items-center md:pb-0 pb-12 absolute md:static md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in
 }
 </style>
