@@ -7,8 +7,15 @@
          <img src="@/assets/logo_landscape_reverse.png" class="h-12"/>
         </span>
       </div>
-      <div :onclick="setOpen" class="text-3xl absolute right-8 top-6 cursor-pointer md:hidden">
-        <ion-icon :name="`${this.open ? 'close' : 'menu'}`" color="light"/>
+      <div class="text-3xl absolute right-8 top-6 cursor-pointer md:hidden">
+        <button class="text-white w-10 h-10 relative focus:outline-none" :onclick="setOpen">
+          <span class="sr-only">Open main menu</span>
+          <div class="block w-5 absolute left-1/2 top-1/2   transform  -translate-x-1/2 -translate-y-1/2">
+            <span aria-hidden="true" class="block absolute h-0.5 w-5 bg-current transform transition duration-500 ease-in-out" :class="{'rotate-45': open,' -translate-y-1.5': !open }"></span>
+            <span aria-hidden="true" class="block absolute  h-0.5 w-5 bg-current   transform transition duration-500 ease-in-out" :class="{'opacity-0': open } "></span>
+            <span aria-hidden="true" class="block absolute  h-0.5 w-5 bg-current transform  transition duration-500 ease-in-out" :class="{'-rotate-45': open, ' translate-y-1.5': !open}"></span>
+          </div>
+        </button>
       </div>
 
       <ul :class="`navbar-menu-mobile ${open ? 'top-20 ' : 'top-[-490px]'}`">
@@ -33,22 +40,20 @@
           <a class="text-white hover:text-gray-400 duration-500"
              :onclick="connectAccount">{{ isConnected ? 'Connected' : 'Connect' }}</a>
         </li>
-        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
-          <a class="text-white hover:text-gray-400 duration-500">{{ currentAccount }}</a>
-        </li>
-        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
-          <a class="text-white hover:text-gray-400 duration-500">{{ chainId }}</a>
-        </li>
-        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
-          <img @click="switchBackground" :src="icon[bgType]" class="h-10"/>
-        </li>
+<!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
+<!--          <a class="text-white hover:text-gray-400 duration-500">{{ currentAccount }}</a>-->
+<!--        </li>-->
+<!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
+<!--          <a class="text-white hover:text-gray-400 duration-500">{{ chainId }}</a>-->
+<!--        </li>-->
+<!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
+<!--          <img @click="switchBackground" :src="icon[bgType]" class="h-10"/>-->
+<!--        </li>-->
       </ul>
     </div>
   </div>
 </template>
 <script>
-
-import Web3 from 'web3';
 
 export default {
   name: 'navbar-vue',
@@ -74,6 +79,12 @@ export default {
         return {}
       },
       type: Object
+    },
+    metamaskInstalled: {
+      type: Function
+    },
+    connectAccount: {
+      type: Function
     }
   },
   data() {
@@ -92,25 +103,6 @@ export default {
     switchBackground() {
       this.bgType = (this.bgType === 'night' ? 'day' : 'night')
       this.$emit('backgroundChanged', this.bgType)
-    },
-    async connectAccount() {
-      await this.provider.request({
-        method: "eth_requestAccounts",
-      });
-      await this.onLogin(this.provider);
-    },
-    async onLogin (provider) {
-      const web3 = new Web3(provider);
-      const accounts = await web3.eth.getAccounts();
-      const chainId = await web3.eth.getChainId();
-      if (accounts.length === 0) {
-        this.$emit('currentAccountChanged', null)
-        this.$emit('isConnectedChanged', false)
-      } else if (accounts[0] !== this.currentAccount) {
-        this.$emit('chainIdChanged', chainId)
-        this.$emit('currentAccountChanged', accounts[0])
-        this.$emit('isConnectedChanged', true)
-      }
     },
     setOpen() {
       this.open = !this.open

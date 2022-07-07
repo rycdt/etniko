@@ -5,11 +5,13 @@
       :provider='provider'
       :chain-id='chainId'
       :networks='networks'
+      :metamaskInstalled="metaMaskInstalled"
+      :connectAccount="connectAccount"
       @backgroundChanged='backgroundChanged'
       @chainIdChanged='chainIdChanged'
       @currentAccountChanged='currentAccountChanged'
-      @isConnectedChanged='isConnectedChanged'
-  />
+      @isConnectedChanged='isConnectedChanged'/>
+
   <main class='w-full'>
     <section class='section'>
       <Headline :bgType='bgType'/>
@@ -47,14 +49,35 @@ export default {
     }
   },
   async mounted () {
-    this.web3 = new Web3(this.provider);
-    this.provider.on('accountsChanged', this.handleAccountsChanged);
-    this.provider.on('chainChanged', this.handleChainChanged);
-    this.provider.on('disconnect', this.handleAccountsChanged);
-    await this.handleChainChanged()
-    await this.onLogin()
+    await this.metaMaskInstalled()
   },
   methods: {
+    async metaMaskInstalled() {
+      if (!this.provider) {
+        console.log('Install MetaMask')
+        return false;
+      } else {
+        console.log('metaMaskInstalled')
+        await this.initializeMetaMask()
+        return true;
+      }
+    },
+    async initializeMetaMask() {
+      this.web3 = new Web3(this.provider);
+      this.provider.on('accountsChanged', this.handleAccountsChanged);
+      this.provider.on('chainChanged', this.handleChainChanged);
+      this.provider.on('disconnect', this.handleAccountsChanged);
+      await this.handleChainChanged()
+      await this.onLogin()
+    },
+    async connectAccount() {
+      if (await this.metaMaskInstalled()) {
+        await this.provider.request({
+          method: 'eth_requestAccounts',
+        });
+        await this.onLogin();
+      }
+    },
     async handleAccountsChanged(accounts) {
       if (accounts.length === 0) {
         this.currentAccount = null

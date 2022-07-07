@@ -8,7 +8,7 @@
 <!--      </div>-->
       <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + background[bgType] + ')' }"></div>
       <div class="main-bg fadeGlow" v-bind:style="{ 'background-image': 'url(' + effect + ')' }"/>
-      <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + fire + ')' }"/>
+<!--      <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + fire + ')' }"/>-->
       <div class="grid grid-cols-12 grid-rows-5 grid-flow-col wh-full z-20">
         <div v-for="bg in slicedBackgroundsLink"
              :class="`${bg.class} ${bg.gridClass}`"
@@ -16,7 +16,7 @@
              @mouseover="mouseOver(bg)"
              @mouseleave="mouseLeave(bg)"
              @click="mouseClick(bg)">
-          <span v-if="bg.gridTextVisible" class="textGlow text-sm">{{ bg.index === bg.gridId ? bg.text : '' }}</span>
+<!--          <span v-if="bg.gridTextVisible" class="textGlow text-sm">{{ bg.index === bg.gridId ? bg.text : '' }}</span>-->
         </div>
       </div>
       <div class='grid wh-full place-content-center z-10'>
@@ -49,6 +49,7 @@ export default {
   data() {
     return {
       background: {
+        day: require('@/assets/bonfire_day.png'),
         night: require('@/assets/bonfire_night.png')
       },
       backgroundPortrait: {
