@@ -11,30 +11,30 @@ contract Etniko is ERC721Enumerable, Ownable {
     string public baseExtension = ".json";
     string public notRevealedUri;
     uint256 public cost = 0.01 ether;
-    uint256 public maxSupply = 10;
+    uint256 public maxSupply = 100;
     uint256 public maxMintAmount = 3;
     uint256 public nftPerAddressLimit = 3;
     bool public paused = false;
     bool public revealed = true;
     bool public onlyWhitelisted = false;
-    address payable commissions = payable(0xFE66909740767FF1d644aC8c670600a902A6bC38);
-    address payable otherCommissions = payable(0xFE66909740767FF1d644aC8c670600a902A6bC38);
+    address payable commissions = payable(0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199);
+    address payable otherCommissions = payable(0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199);
     address[] public whitelistedAddresses;
     mapping(address => uint256) public addressMintedBalance;
 
-//    constructor(
-//        string memory _name,
-//        string memory _symbol,
-//        string memory _initBaseURI,
-//        string memory _initNotRevealedUri
-//    ) ERC721(_name, _symbol) {
-//        setBaseURI(_initBaseURI);
-//        setNotRevealedURI(_initNotRevealedUri);
-//    }
-
-    constructor() ERC721('Etniko', 'ET') {
-        baseURI = 'ipfs://QmVjPnBxBsTgCnZTSGm6gY6xuLbhLZZmpPWtjf2uHwZH77/';
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        string memory _initBaseURI,
+        string memory _initNotRevealedUri
+    ) ERC721(_name, _symbol) {
+        setBaseURI(_initBaseURI);
+        setNotRevealedURI(_initNotRevealedUri);
     }
+
+//    constructor() ERC721('Etniko', 'ET') {
+//        baseURI = 'ipfs://QmVjPnBxBsTgCnZTSGm6gY6xuLbhLZZmpPWtjf2uHwZH77/';
+//    }
 
     // internal
     function _baseURI() internal view virtual override returns (string memory) {

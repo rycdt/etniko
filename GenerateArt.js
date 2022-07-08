@@ -45,6 +45,7 @@ function getLayer(name, skip=0.0) {
     console.log("Layer");
     console.log(name);
     const svg = readFileSync(`./layers/${name}.svg`, 'utf-8');
+    // eslint-disable-next-line no-useless-escape
     const re = /(?<=\<svg\s*[^>]*>)([\s\S]*?)(?=\<\/svg\>)/g
     const layer = svg.match(re)[0];
     return Math.random() > skip ? layer : '';
@@ -61,7 +62,6 @@ async function svgToPng(name) {
 
 
 function createImage(idx) {
-
     const bg = randInt(1);
     const skintone = randInt(4);
     const eyes = randInt(4); 
@@ -85,13 +85,11 @@ function createImage(idx) {
 
 ////Creating metaData
         const meta = {
-            name,
-            description: `A drawing of ${name.split('-').join(' ')}`,
-            image: `${idx}.png`,
+            name: `Test ET #${idx}`,
+            description: `A drawing of Test ET`,
+            external_url: ``,
+            image: `ipfs://QmdjpFSDPABroJ5JfDimL7RqDUcZh6ccSxa9wb7P5Tmcr4/${idx}.png`,
             attributes: [
-                { 
-                    //Create Traits here
-                }
             ]
         }
         writeFileSync(`./nfts/${idx}.json`, JSON.stringify(meta))
@@ -103,7 +101,7 @@ function createImage(idx) {
 }
 
 
-// Create dir if not exists
+// Create dir if not existsf
 if (!existsSync('./nfts')){
     mkdirSync('./nfts');
 }

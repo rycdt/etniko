@@ -1,13 +1,13 @@
 .textGlow {
-  color: #ffae34;
+  color: white;
   font-family: 'Passero One', cursive;
   font-weight: bold;
-  font-size: 2.5em;
+  font-size: 2em;
   letter-spacing: .2em;
   animation: glow 0.65s ease-in-out infinite alternate;
   text-align: center;
 }
-
+//#ffae34
 
 @keyframes glow {
   from {

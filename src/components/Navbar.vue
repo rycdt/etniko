@@ -1,13 +1,11 @@
 <template>
 <!--  sm:visible md:hidden lg:hidden-->
-  <div class="w-full fixed top-0 left-0 z-30">
-    <div class="md:flex items-center justify-between py-4 md:px-10 px-7">
+  <div class="w-full md:h-fit lg:h-fit h-full md:overflow-hidden lg:overflow-hidden overflow-y-auto fixed top-0 left-0 z-30">
+    <div class="md:flex items-center justify-between px-6 pt-6">
       <div class="cursor-pointer flex items-center">
-        <span class="text-3xl text-indigo-600 mr-1">
-         <img src="@/assets/logo_landscape_reverse.png" class="h-12"/>
-        </span>
+         <img src="@/assets/etniko_main.png" class="h-12"/>
       </div>
-      <div class="text-3xl absolute right-8 top-6 cursor-pointer md:hidden">
+      <div class="text-3xl absolute right-6 top-4 cursor-pointer md:hidden">
         <button class="text-white w-10 h-10 relative focus:outline-none" :onclick="setOpen">
           <span class="sr-only">Open main menu</span>
           <div class="block w-5 absolute left-1/2 top-1/2   transform  -translate-x-1/2 -translate-y-1/2">
@@ -18,33 +16,58 @@
         </button>
       </div>
 
-      <ul :class="`navbar-menu-mobile ${open ? 'top-20 ' : 'top-[-490px]'}`">
-        <div class="sm:visible md:hidden lg:hidden">
-          <div class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
-            <a class="text-white hover:text-gray-400 duration-500">Twitter</a>
-          </div>
-          <div class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
-            <a class="text-white hover:text-gray-400 duration-500">Discord</a>
-          </div>
-          <div class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
-            <a class="text-white hover:text-gray-400 duration-500">OpenSea</a>
-          </div>
-          <div class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
-            <a class="text-white hover:text-gray-400 duration-500">Gallery</a>
-          </div>
-        </div>
-        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
-          <a class="text-white hover:text-gray-400 duration-500">Mint</a>
+      <ul :class="`navbar-menu-mobile sm:visible ${open ? 'top-20 ' : 'top-[-490px]'}`">
+        <li class="nav-item-mobile">
+          <a class="nav-item-hover">Twitter</a>
         </li>
-        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">
-          <a class="text-white hover:text-gray-400 duration-500"
+        <li class="nav-item-mobile">
+          <a class="nav-item-hover">Discord</a>
+        </li>
+        <li class="nav-item-mobile">
+          <a class="nav-item-hover">OpenSea</a>
+        </li>
+        <li class="nav-item-mobile">
+          <a class="nav-item-hover">Gallery</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item-hover">Mint</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item-hover"
              :onclick="connectAccount">{{ isConnected ? 'Connected' : 'Connect' }}</a>
         </li>
+        <li class="invisible sm:invisible md:visible md:ml-8 text-xl md:my-0 my-7">
+          <img src="@/assets/nft/nftLoop.gif" class="h-12 rounded-md"/>
+        </li>
+
 <!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
 <!--          <a class="text-white hover:text-gray-400 duration-500">{{ currentAccount }}</a>-->
 <!--        </li>-->
 <!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
 <!--          <a class="text-white hover:text-gray-400 duration-500">{{ chainId }}</a>-->
+<!--        </li>-->
+<!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
+<!--          <div class="relative">-->
+<!--            <img src="@/assets/signboard.png" class="h-10"/>-->
+<!--            <div class="centered">Mint</div>-->
+<!--          </div>-->
+<!--        </li>-->
+<!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
+<!--          <div class="relative">-->
+<!--            <img src="@/assets/signboard.png" class="h-10"/>-->
+<!--            <div class="centered">Connect</div>-->
+<!--          </div>-->
+<!--        </li>:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
+<!--          <div class="relative">-->
+<!--            <img src="@/assets/signboard.png" class="h-10"/>-->
+<!--            <div class="centered">Mint</div>-->
+<!--          </div>-->
+<!--        </li>-->
+<!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
+<!--          <div class="relative">-->
+<!--            <img src="@/assets/signboard.png" class="h-10"/>-->
+<!--            <div class="centered">Connect</div>-->
+<!--          </div>-->
 <!--        </li>-->
 <!--        <li class="md:ml-8 text-xl md:my-0 my-7 cursor-pointer">-->
 <!--          <img @click="switchBackground" :src="icon[bgType]" class="h-10"/>-->
@@ -112,11 +135,26 @@ export default {
 </script>
 
 <style scoped>
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 /*.navbar-menu {*/
 /*    @apply sm:invisible md:visible lg:visible md:flex md:items-center md:pb-0 pb-12 absolute md:static md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in*/
 /*}*/
 /*sm:visible md:hidden lg:hidden*/
 .navbar-menu-mobile {
   @apply md:flex md:items-center md:pb-0 pb-12 absolute md:static md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in
+}
+.nav-item {
+  @apply md:ml-8 text-xl md:my-0 my-7 cursor-pointer
+}
+.nav-item-mobile {
+  @apply sm:visible md:hidden lg:hidden md:ml-8 text-xl md:my-0 my-7 cursor-pointer
+}
+.nav-item-hover {
+  @apply text-white hover:text-gray-400 duration-500
 }
 </style>
