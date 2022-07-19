@@ -1,14 +1,12 @@
 <template>
   <section>
-    <div class="invisible sm:invisible md:visible lg:visible wh-full">
-<!--      <div class="cursor-pointer flex items-center absolute z-30 mt-4 ml-7">-->
-<!--        <span class="text-3xl text-indigo-600 mr-1">-->
-<!--         <img src="@/assets/logo_landscape_reverse.png" class="h-12"/>-->
-<!--        </span>-->
-<!--      </div>-->
+    <div id="main" class="invisible sm:invisible md:visible lg:visible wh-full">
+      <audio loop autoplay>
+        <source src="@/assets/audio/wild_light_wind.mp3">
+      </audio>
       <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + background[bgType] + ')' }"></div>
       <div class="main-bg fadeGlow" v-bind:style="{ 'background-image': 'url(' + effect + ')' }"/>
-<!--      <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + fire + ')' }"/>-->
+      <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + fire + ')' }"/>
       <div class="grid grid-cols-12 grid-rows-5 grid-flow-col wh-full z-20">
         <div v-for="bg in slicedBackgroundsLink"
              :class="`${bg.class} ${bg.gridClass}`"
@@ -16,12 +14,8 @@
              @mouseover="mouseOver(bg)"
              @mouseleave="mouseLeave(bg)"
              @click="mouseClick(bg)">
-<!--          <span v-if="bg.gridTextVisible" class="textGlow text-sm">{{ bg.index === bg.gridId ? bg.text : '' }}</span>-->
-        </div>
-      </div>
-      <div class='grid wh-full place-content-center z-10'>
-        <div :class="`${textAnim}`">
-          <span class="textGlow">{{ fireText }}</span>
+          <div :class="`${bg.textAnim}`">
+            <span class="textGlow">{{ bg.text }}</span></div>
         </div>
       </div>
     </div>
@@ -52,10 +46,6 @@ export default {
         day: require('@/assets/bonfire_day.png'),
         night: require('@/assets/bonfire_night.png')
       },
-      backgroundPortrait: {
-        day: require('@/assets/bg_day_portrait.jpg'),
-        night: require('@/assets/bg_night_portrait.jpg')
-      },
       fire: require('@/assets/fire.gif'),
       sliceCount: 60,
       slicedBackgroundsLink: [],
@@ -64,11 +54,16 @@ export default {
       effect: {},
       mintAmount: 1,
       fireText: '',
-      textAnim: ''
+      textAnim: '',
+      audio: new Audio(require('../assets/audio/wild_light_wind.mp3')),
+      itemAudio: new Audio(require('../assets/audio/item_click.mp3')),
+      hoverId: null
     }
   },
   mounted () {
     this.setSlicedBackgrounds()
+    this.audio.loop = true
+    this.audio.autoplay = true
   },
   methods: {
     setSlicedBackgrounds () {
@@ -80,16 +75,17 @@ export default {
           // eslint-disable-next-line no-prototype-builtins
           hasHoverEffect: !!hover,
           effect: hover ? hover.effect : '',
-          text: hover ? hover.text : '',
+          text: '',
           link: hover ? hover.link : '',
           textAnim: hover ? hover.textAnim: '',
           gridId: hover ? hover.id : null,
-          gridTextVisible: !!hover,
+          gridTextVisible: hover ? hover.gridTextVisible : false,
           gridClass: hover? hover.gridClass : ''
         })
       })
     },
     mouseClick (bg) {
+      this.audio.play()
       if (bg.link) {
         window.open(bg.link);
         return true;
@@ -100,13 +96,19 @@ export default {
       let slicedBg = null
       if (hover) {
         slicedBg = this.slicedBackgroundsLink.find(data => data.index === hover.id)
+        if (!this.hoverId || hover.id !== this.hoverId) {
+          this.itemAudio.play()
+        }
+        this.hoverId = hover.id
+      } else {
+        this.hoverId = null
       }
       if (bg.hasHoverEffect) {
-        this.effect = bg.effect
-        this.fireText = bg.text
-        this.textAnim = bg.textAnim
+        this.effect = hover.effect
         if (slicedBg) {
-          slicedBg.gridTextVisible = false
+          slicedBg.textAnim = hover.textAnim
+          slicedBg.text = hover.text
+          slicedBg.gridTextVisible = true
         }
       }
     },
@@ -115,13 +117,17 @@ export default {
       let slicedBg = null
       if (hover) {
         slicedBg = this.slicedBackgroundsLink.find(data => data.index === hover.id)
+        this.hoverId = hover.id
+      } else {
+        this.hoverId = null
       }
       if (bg.hasHoverEffect) {
         this.effect = ''
-        this.fireText = ''
         this.textAnim = ''
         if (slicedBg) {
-          slicedBg.gridTextVisible = true
+          slicedBg.textAnim = ''
+          slicedBg.text = ''
+          slicedBg.gridTextVisible = false
         }
       }
     }
