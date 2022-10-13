@@ -1,12 +1,13 @@
 <template>
   <section>
     <div id="main" class="invisible sm:invisible md:visible lg:visible wh-full">
-      <audio loop autoplay>
-        <source src="@/assets/audio/wild_light_wind.mp3">
-      </audio>
+<!--      <audio loop autoplay>-->
+<!--        <source src="@/assets/audio/wild_light_wind.mp3">-->
+<!--      </audio>-->
       <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + background[bgType] + ')' }"></div>
       <div class="main-bg fadeGlow" v-bind:style="{ 'background-image': 'url(' + effect + ')' }"/>
-      <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + fire + ')' }"/>
+<!--      <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + flag + ')' }"/>-->
+<!--      <div class="main-bg" v-bind:style="{ 'background-image': 'url(' + fire + ')' }"/>-->
       <div class="grid grid-cols-12 grid-rows-5 grid-flow-col wh-full z-20">
         <div v-for="bg in slicedBackgroundsLink"
              :class="`${bg.class} ${bg.gridClass}`"
@@ -44,9 +45,10 @@ export default {
     return {
       background: {
         day: require('@/assets/bonfire_day.png'),
-        night: require('@/assets/bonfire_night.png')
+        night: require('@/assets/bonfire_night_update.png')
       },
       fire: require('@/assets/fire.gif'),
+      flag: require('@/assets/flag.gif'),
       sliceCount: 60,
       slicedBackgroundsLink: [],
       hoverEffectsLink: [],
@@ -55,15 +57,15 @@ export default {
       mintAmount: 1,
       fireText: '',
       textAnim: '',
-      audio: new Audio(require('../assets/audio/wild_light_wind.mp3')),
+      // audio: new Audio(require('../assets/audio/wild_light_wind.mp3')),
       itemAudio: new Audio(require('../assets/audio/item_click.mp3')),
       hoverId: null
     }
   },
   mounted () {
     this.setSlicedBackgrounds()
-    this.audio.loop = true
-    this.audio.autoplay = true
+    // this.audio.loop = true
+    // this.audio.autoplay = true
   },
   methods: {
     setSlicedBackgrounds () {
@@ -77,7 +79,7 @@ export default {
           effect: hover ? hover.effect : '',
           text: '',
           link: hover ? hover.link : '',
-          textAnim: hover ? hover.textAnim: '',
+          textAnim: '',
           gridId: hover ? hover.id : null,
           gridTextVisible: hover ? hover.gridTextVisible : false,
           gridClass: hover? hover.gridClass : ''
@@ -85,7 +87,7 @@ export default {
       })
     },
     mouseClick (bg) {
-      this.audio.play()
+      // this.audio.play()
       if (bg.link) {
         window.open(bg.link);
         return true;
