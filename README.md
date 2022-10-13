@@ -43,3 +43,5 @@ npx solhint 'contracts/**/*.sol' --fix
 ```
 "# Etniko" 
 
+'''
+node index.js
