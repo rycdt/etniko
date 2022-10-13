@@ -43,5 +43,16 @@ npx solhint 'contracts/**/*.sol' --fix
 ```
 "# Etniko" 
 
-'''
+```art
+### To add rarity delimiter
+node set_rarity.js 
+
+### Define number of occurrences per part
+node rarity.js
+
+### Generate nft
 node index.js
+
+### Generate GIF preview
+node preview_gif.js
+```
